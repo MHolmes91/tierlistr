@@ -1,0 +1,12 @@
+{
+  "name": "tierlistr",
+  "version": "0.0.1",
+  "dependencies": {
+    "angular": "1.2.*",
+    "angular-route": "1.2.*",
+    "angular-dragdrop": "1.0.*",
+    "semantic-ui": "0.15.*",
+    "angular-md5": "0.1.x",
+    "angular-sanitize": "1.2.*"
+  }
+}
