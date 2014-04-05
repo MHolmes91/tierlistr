@@ -15,15 +15,12 @@ if(process.env.NODE_ENV == 'development'){
 var parametersFile = 'config/parameters.json'
 
 var parametersJson = JSON.parse(fs.readFileSync(parametersFile))
-console.log("Parameters:\n" + JSON.stringify(parametersJson, null, "\t"))
+//console.log("Parameters:\n" + JSON.stringify(parametersJson, null, "\t"))
 
 LocalStrategy = require('passport-local').Strategy
 Conn = require('./config/connection')
 Mongoose = require('mongoose')
 Schema = Mongoose.Schema
-
-//Require models
-TierList = require('./app/models/tierlist')
 
 //Mongoose Stuff
 var connectionParams = parametersJson.parameters.connection
@@ -36,9 +33,6 @@ var conn = new Conn(connectionParams.username,
 )
 conn.connect(Mongoose)
 
-//Setting Up Custom Stuff
-var TierListModel = new TierList(conn, Mongoose, Schema)
-
 app.configure(function(){
 	app.use(express.cookieParser());
 	app.use(express.bodyParser());
@@ -48,21 +42,33 @@ app.configure(function(){
 	app.use(express.static(__dirname + '/public'))
 })
 
+var odm = {
+	Mongoose: Mongoose,
+	Schema: Schema,
+	Conn: conn
+}
+
+//Hook Mongoose to the controllers and controllers into routes
+var controllers = []
+TierListController = require('./app/controllers/tierListController')
+var tierListController = new TierListController(odm)
+controllers.push( tierListController )
+
 //Get public folder dirs
 var publicPath = 'public'
 var publicDir = fs.readdirSync(publicPath)
 var publicDirs = []
 for(var i in publicDir){
 	var path = publicDir[i]
-	console.log(path)
+	//console.log(path)
 	if(fs.lstatSync(publicPath + '/' + path).isDirectory()){
 		publicDirs.push(path)
 	}
 	
 }
-console.log(JSON.stringify(publicDirs))
+//console.log(JSON.stringify(publicDirs))
 
-var routes = require('./config/routing')(app, TierListModel, publicDirs)
+var routes = require('./config/routing')(app, controllers, publicDirs)
 var port = process.env.PORT || 5000;
 server.listen(port, function() {
 	console.log("Listening on " + port);

@@ -1,4 +1,4 @@
-module.exports = function (app, TierListModel, publicDirs){
+module.exports = function (app, controllers, publicDirs){
 	//Can't go directly to root is a problem
 	//RegEx creator for all publicDirs
 	regString = "^"
@@ -8,13 +8,15 @@ module.exports = function (app, TierListModel, publicDirs){
 	}
 	regString = regString.slice(0,-1)
 	regString += "$"
-	console.log(regString)
+	//console.log(regString)
 	publicRegEx = new RegExp(regString,"g")
 	
 	apiRoot = '/api'
 	
 	//Handle api routes
-	TierListModel.routes(app, apiRoot)
+	for(var i = 0; i < controllers.length; i++){
+		controllers[i].routes(app, apiRoot)
+	}
 	
 	//Don't do anything to a URL that is a public path
 	app.get(publicRegEx, function(request, response){
