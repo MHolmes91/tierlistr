@@ -33,7 +33,6 @@ Model.prototype.handleError = function(err){
 	}
 }
 
-//No parameters yet
 Model.prototype.getModels = function(query, fields, offset, limit, sort, callback){
 	if(!query){
 		query = {}

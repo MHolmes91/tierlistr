@@ -10,7 +10,7 @@ function TierListController(odm){
 //Routes for this CRUD Type
 //Redesign with success attribute
 TierListController.prototype.routes = function(app, apiRoot){
-	self = this
+	var self = this
 	app.get(apiRoot + '/tierlist', function(request,response){
 		var query = request.query.query
 		var fields = request.query.fields

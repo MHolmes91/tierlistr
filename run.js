@@ -17,7 +17,6 @@ var parametersFile = 'config/parameters.json'
 var parametersJson = JSON.parse(fs.readFileSync(parametersFile))
 //console.log("Parameters:\n" + JSON.stringify(parametersJson, null, "\t"))
 
-LocalStrategy = require('passport-local').Strategy
 Conn = require('./config/connection')
 Mongoose = require('mongoose')
 Schema = Mongoose.Schema
@@ -50,9 +49,14 @@ var odm = {
 
 //Hook Mongoose to the controllers and controllers into routes
 var controllers = []
+
 TierListController = require('./app/controllers/tierListController')
 var tierListController = new TierListController(odm)
 controllers.push( tierListController )
+
+ItemController = require('./app/controllers/itemController')
+var itemController = new ItemController(odm)
+controllers.push( itemController )
 
 //Get public folder dirs
 var publicPath = 'public'
@@ -63,12 +67,14 @@ for(var i in publicDir){
 	//console.log(path)
 	if(fs.lstatSync(publicPath + '/' + path).isDirectory()){
 		publicDirs.push(path)
-	}
-	
+	}	
 }
 //console.log(JSON.stringify(publicDirs))
 
-var routes = require('./config/routing')(app, controllers, publicDirs)
+var Router = require('./config/routing')
+var router = new Router(app, controllers, publicDirs)
+router.routeListeners()
+
 var port = process.env.PORT || 5000;
 server.listen(port, function() {
 	console.log("Listening on " + port);
